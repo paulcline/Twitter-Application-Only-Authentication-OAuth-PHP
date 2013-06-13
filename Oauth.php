@@ -98,6 +98,27 @@ function invalidate_bearer_token($bearer_token){
 }
 
 /**
+* Get latest status of a specific user
+*/
+function get_status($bearer_token, $user) {
+
+	$url = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=" . $user . "&count=1";
+	$headers = array( 
+		"GET /1.1/statuses/user_timeline.json?screen_name=" . $user . "&count=1 HTTP/1.1", 
+		"Host: api.twitter.com", 
+		"User-Agent: Status Grabber",
+		"Authorization: Bearer " . $bearer_token . ""
+	);
+	$ch = curl_init();  // setup a curl
+	curl_setopt($ch, CURLOPT_URL, $url);  // set url to send to
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers); // set custom headers
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // return output
+	$retrievedhtml = curl_exec ($ch); // execute the curl
+	curl_close($ch); // close the curl
+	return $retrievedhtml;
+}
+
+/**
 * Search
 * Basic Search of the Search API
 * Based on https://dev.twitter.com/docs/api/1/get/search
@@ -128,5 +149,6 @@ function search_for_a_term($bearer_token, $query, $result_type='mixed', $rpp='15
 // lets run a search.
 $bearer_token = get_bearer_token(); // get the bearer token
 print search_for_a_term($bearer_token, "test"); //  search for the work 'test'
+print get_status($bearer_token, "twitterapi");
 invalidate_bearer_token($bearer_token); // invalidate the token
 ?>
